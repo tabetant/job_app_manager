@@ -1,6 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 
+type Job = {
+    id: number,
+    title: string,
+    company: string,
+    dateApplied: string,
+    status: 'applied' | 'rejected' | 'offer' | 'interview',
+    notes: string,
+}
+
 export default function JobForm() {
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
@@ -9,13 +18,13 @@ export default function JobForm() {
     const [notes, setNotes] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [applications, setApplications] = useState([]);
+    const [applications, setApplications] = useState<Job[]>([]);
 
     const fetchEvents = async () => {
         setLoading(true);          // Optional: Show loading state
         setError('');              // Clear previous errors
         try {
-            const res = await fetch(`/api/applications}`);
+            const res = await fetch('/api/applications');
             if (!res.ok) {
                 throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
             }
@@ -50,6 +59,7 @@ export default function JobForm() {
             setDate('');
             setStatus('applied');
             setNotes('');
+            fetchEvents();
             console.log('Job added successfully');
         } else {
             console.error('Failed to submit');
@@ -61,17 +71,40 @@ export default function JobForm() {
         <>
             <h1>Job Form</h1>
             <form onSubmit={handleSubmit}>
-                <input onChange={(e) => setTitle(e.target.value)} type='text' name='title' placeholder='Enter Job Title' />
-                <input onChange={(e) => setCompany(e.target.value)} type='text' name='company' placeholder='Enter Company Name' />
-                <input onChange={(e) => setDate(e.target.value)} type='date' name='date_applied' />
-                <select onChange={(e) => setStatus(e.target.value)}>
+                <input value={title} onChange={(e) => setTitle(e.target.value)} type='text' name='title' placeholder='Enter Job Title' />
+                <input value={company} onChange={(e) => setCompany(e.target.value)} type='text' name='company' placeholder='Enter Company Name' />
+                <input value={date} onChange={(e) => setDate(e.target.value)} type='date' name='date_applied' />
+                <select value={status} onChange={(e) => setStatus(e.target.value)}>
                     <option value='applied'>Applied</option>
                     <option value='interview'>Interview</option>
                     <option value='offer'>Offer</option>
                     <option value='rejected'>Rejected</option>
                 </select>
-                <textarea onChange={(e) => setNotes(e.target.value)} name='notes' placeholder='enter your notes' />
+                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} name='notes' placeholder='enter your notes' />
+                <input type='submit' value='Add Application' />
             </form>
+            <table>
+                <thead>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Date Applied</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </thead>
+                <tbody>
+                    {
+                        applications.map(app => (
+                            <tr key={app.id}>
+                                <td>{app.title}</td>
+                                <td>{app.company}</td>
+                                <td>{app.dateApplied}</td>
+                                <td>{app.status}</td>
+                                <td>{app.notes}</td>
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
         </>
     );
 }
