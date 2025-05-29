@@ -7,12 +7,30 @@ export default function JobForm() {
     const [date, setDate] = useState('');
     const [status, setStatus] = useState('applied');
     const [notes, setNotes] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [applications, setApplications] = useState([]);
 
     const fetchEvents = async () => {
-        const res = await fetch('/api/applications', {
-            method: 'GET'
-        })
-    }
+        setLoading(true);          // Optional: Show loading state
+        setError('');              // Clear previous errors
+        try {
+            const res = await fetch(`/api/applications}`);
+            if (!res.ok) {
+                throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+            }
+            const data = await res.json();
+            setApplications(data);
+        } catch (err: any) {
+            console.error('Error fetching events:', err);
+            setError(err.message || 'Failed to load applications');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => { fetchEvents(); }, []);
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
