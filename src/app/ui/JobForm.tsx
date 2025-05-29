@@ -83,13 +83,15 @@ export default function JobForm() {
                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)} name='notes' placeholder='enter your notes' />
                 <input type='submit' value='Add Application' />
             </form>
-            <table>
+            <table className='mx-auto'>
                 <thead>
-                    <th>Job Title</th>
-                    <th>Company</th>
-                    <th>Date Applied</th>
-                    <th>Status</th>
-                    <th>Notes</th>
+                    <tr>
+                        <th className='px-4 py-2'>Job Title</th>
+                        <th className='px-4 py-2'>Company</th>
+                        <th className='px-4 py-2'>Date Applied</th>
+                        <th className='px-4 py-2'>Status</th>
+                        <th className='px-4 py-2'>Notes</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {
