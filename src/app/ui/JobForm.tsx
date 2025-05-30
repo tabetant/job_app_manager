@@ -24,7 +24,9 @@ export default function JobForm() {
         setLoading(true);          // Optional: Show loading state
         setError('');              // Clear previous errors
         try {
-            const res = await fetch('/api/applications');
+            const res = await fetch('/api/applications', {
+                method: 'GET',
+            });
             if (!res.ok) {
                 throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
             }
@@ -69,8 +71,8 @@ export default function JobForm() {
     return (
 
         <>
-            <h1>Job Form</h1>
-            <form onSubmit={handleSubmit}>
+            <h1 className='text-center'>Job Form</h1>
+            <form className='mx-auto' onSubmit={handleSubmit}>
                 <input value={title} onChange={(e) => setTitle(e.target.value)} type='text' name='title' placeholder='Enter Job Title' />
                 <input value={company} onChange={(e) => setCompany(e.target.value)} type='text' name='company' placeholder='Enter Company Name' />
                 <input value={date} onChange={(e) => setDate(e.target.value)} type='date' name='date_applied' />
