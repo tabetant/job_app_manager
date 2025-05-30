@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 type Job = {
     id: number,
-    title: string,
+    jobTitle: string,
     company: string,
     dateApplied: string,
     status: 'applied' | 'rejected' | 'offer' | 'interview',
@@ -68,6 +68,19 @@ export default function JobForm() {
         }
     }
 
+    async function deleteApp(job: Job) {
+        const res = await fetch('/api/applications', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: job.id })
+        })
+        if (res.ok) {
+            fetchEvents(); // ✅ reload the list after successful delete
+        } else {
+            console.error('Failed to delete application');
+        }
+    }
+
     return (
 
         <>
@@ -99,11 +112,12 @@ export default function JobForm() {
                     {
                         applications.map(app => (
                             <tr key={app.id}>
-                                <td>{app.title}</td>
+                                <td>{app.jobTitle}</td>
                                 <td>{app.company}</td>
                                 <td>{app.dateApplied}</td>
                                 <td>{app.status}</td>
                                 <td>{app.notes}</td>
+                                <td><button type='button' onClick={() => deleteApp(app)}>Delete</button></td>
                             </tr>
                         ))
                     }

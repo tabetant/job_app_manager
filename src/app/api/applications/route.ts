@@ -2,6 +2,7 @@
 import { db } from '@/index'
 import { applications } from '@/db/schema'
 import { NextResponse } from 'next/server';
+import { eq } from 'drizzle-orm'
 
 export async function GET(request: Request) {
     const allApps = await db.select().from(applications);
@@ -35,5 +36,20 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+    try {
+        const body = await request.json();
+        if (!body.id) {
+            return new NextResponse(JSON.stringify({ error: 'Missing ID' }), { status: 400 });
+        }
+
+        await db.delete(applications).where(eq(applications.id, body.id));
+
+        return new NextResponse(JSON.stringify({ message: 'Application deleted' }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    } catch (err) {
+        return new NextResponse(JSON.stringify({ error: 'Server error', details: err }), { status: 500 });
+    }
 
 }
