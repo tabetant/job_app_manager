@@ -19,8 +19,9 @@ export default function JobForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [applications, setApplications] = useState<Job[]>([]);
+    const [edits, setEdits] = useState<{ [id: number]: { field: string, value: string } }>({});
 
-    const fetchEvents = async () => {
+    const fetchApps = async () => {
         setLoading(true);          // Optional: Show loading state
         setError('');              // Clear previous errors
         try {
@@ -40,7 +41,7 @@ export default function JobForm() {
         }
     };
 
-    useEffect(() => { fetchEvents(); }, []);
+    useEffect(() => { fetchApps(); }, []);
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +62,7 @@ export default function JobForm() {
             setDate('');
             setStatus('applied');
             setNotes('');
-            fetchEvents();
+            fetchApps();
             console.log('Job added successfully');
         } else {
             console.error('Failed to submit');
@@ -75,10 +76,25 @@ export default function JobForm() {
             body: JSON.stringify({ id: job.id })
         })
         if (res.ok) {
-            fetchEvents(); // ✅ reload the list after successful delete
+            fetchApps(); // ✅ reload the list after successful delete
         } else {
             console.error('Failed to delete application');
         }
+    }
+
+    async function editApp(id: number) {
+        const field = edits[id].field;
+        const value = edits[id].value;
+        fetch('/api/applications', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: id,
+                field: field,
+                value: value,
+            })
+        })
+        fetchApps();
     }
 
     return (
@@ -106,6 +122,8 @@ export default function JobForm() {
                         <th className='px-4 py-2'>Date Applied</th>
                         <th className='px-4 py-2'>Status</th>
                         <th className='px-4 py-2'>Notes</th>
+                        <th className='px-4 py-2'>Delete</th>
+                        <th className='px-4 py-2'>Edit</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,11 +136,22 @@ export default function JobForm() {
                                 <td>{app.status}</td>
                                 <td>{app.notes}</td>
                                 <td><button type='button' onClick={() => deleteApp(app)}>Delete</button></td>
+                                <td>
+                                    <select onChange={(e) => setEdits(prev => ({ ...prev, [app.id]: { ...prev[app.id], field: e.target.value, } }))}>
+                                        <option value='title'>title</option>
+                                        <option value='company'>company</option>
+                                        <option value='status'>status</option>
+                                        <option value='notes'>notes</option>
+                                        <option value='date_applied'>date applied</option>
+                                    </select>
+                                    <input onChange={(e) => setEdits(prev => ({ ...prev, [app.id]: { ...prev[app.id], value: e.target.value } }))} type={edits[app.id]?.field == 'date_applied' ? 'date' : 'text'} name='new_value' placeholder='enter new value' />
+                                    <button type='button' onClick={() => editApp(app.id)}>Edit Application</button>
+                                </td>
                             </tr>
                         ))
                     }
                 </tbody>
-            </table>
+            </table >
         </>
     );
 }

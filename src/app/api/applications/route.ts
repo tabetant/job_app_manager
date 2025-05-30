@@ -32,6 +32,33 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+    const body = await request.json();
+    const id = body.id;
+    const field = body.field;
+    const value = body.value;
+    switch (field) {
+        case 'title':
+            await db.update(applications).set({ jobTitle: value }).where(eq(applications.id, id));
+            break;
+        case 'company':
+            await db.update(applications).set({ company: value }).where(eq(applications.id, id));
+            break;
+        case 'status':
+            await db.update(applications).set({ status: value }).where(eq(applications.id, id));
+            break;
+        case 'notes':
+            await db.update(applications).set({ notes: value }).where(eq(applications.id, id));
+            break;
+        case 'date_applied':
+            await db.update(applications).set({ dateApplied: value }).where(eq(applications.id, id));
+            break;
+        default:
+            return new NextResponse(JSON.stringify({ error: 'Invalid field' }), { status: 400 });
+    }
+    return new NextResponse(JSON.stringify({ message: 'Application updated' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+    });
 
 }
 
