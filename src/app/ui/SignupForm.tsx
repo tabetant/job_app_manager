@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/db/client';
+import Link from 'next/link'
 export default function SignupForm() {
     const inputsSchema = z.object({
         name: z.string().min(1, 'This is required'),
@@ -49,6 +50,7 @@ export default function SignupForm() {
             <input {...register('password')} type='password' placeholder='enter your password' />
             <p>{error.password?.message}</p>
             <input type='submit' value='Sign Up' />
+            <Link href='/login'>Already a member? Log in !</Link>
         </form>
     )
 }
