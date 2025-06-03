@@ -1,0 +1,54 @@
+import { z } from 'zod';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { supabase } from '@/db/client';
+export default function SignupForm() {
+    const inputsSchema = z.object({
+        name: z.string().min(1, 'This is required'),
+        email: z.string().email('Invalid email address'),
+        password: z.string().min(8, 'Password must be at least 8 characters'),
+    })
+
+    type Inputs = z.infer<typeof inputsSchema>
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { error },
+
+    } = useForm<Inputs>({
+        resolver: zodResolver(inputsSchema),
+        defaultValues: {
+            name: '',
+            email: '',
+            password: ''
+        }
+    });
+    const onSubmit: SubmitHandler<Inputs> = async (data) => {
+        const { email, password, name } = data;
+        const { error } = await supabase().auth.signUp({
+            email,
+            password,
+            options: {
+                data: { name }
+            }
+        });
+        if (error) {
+            console.error('Signup Failed: ', error.message);
+            return;
+        }
+    }
+
+    return (
+        <form className='text-center' onSubmit={handleSubmit(onSubmit)}>
+            <input {...register('name')} type='text' placeholder='enter your name' />
+            <p>{error.name?.message}</p>
+            <input {...register('email')} type='email' placeholder='enter your email' />
+            <p>{error.email?.message}</p>
+            <input {...register('password')} type='password' placeholder='enter your password' />
+            <p>{error.password?.message}</p>
+            <input type='submit' value='Sign Up' />
+        </form>
+    )
+}
