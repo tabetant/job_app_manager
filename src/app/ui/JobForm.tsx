@@ -163,6 +163,7 @@ export default function JobForm() {
                     }
                 </tbody>
             </table >
+            <button onClick={async () => { await supabase().auth.signOut(); router.push('/login') }}>Sign Out</button>
         </>
     );
 }
