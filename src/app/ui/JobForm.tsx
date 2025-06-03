@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-
+import { supabase } from '@/db/client';
+import { useRouter } from 'next/navigation'
 type Job = {
     id: number,
     jobTitle: string,
@@ -11,6 +12,7 @@ type Job = {
 }
 
 export default function JobForm() {
+    const router = useRouter();
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
     const [date, setDate] = useState('');
@@ -43,6 +45,15 @@ export default function JobForm() {
 
     useEffect(() => { fetchApps(); }, []);
 
+    useEffect(() => {
+        setLoading(true);
+        supabase().auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                router.push('/login');
+            }
+        })
+        setLoading(false);
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
