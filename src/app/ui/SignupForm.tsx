@@ -3,7 +3,9 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/db/client';
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 export default function SignupForm() {
+    const router = useRouter();
     const inputsSchema = z.object({
         name: z.string().min(1, 'This is required'),
         email: z.string().email('Invalid email address'),
@@ -39,6 +41,7 @@ export default function SignupForm() {
             console.error('Signup Failed: ', error.message);
             return;
         }
+        router.push('/emailver')
     }
 
     return (
