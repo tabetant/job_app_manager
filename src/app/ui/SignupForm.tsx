@@ -1,3 +1,4 @@
+'use client'
 import { z } from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,7 +19,7 @@ export default function SignupForm() {
         register,
         handleSubmit,
         watch,
-        formState: { error },
+        formState: { errors },
 
     } = useForm<Inputs>({
         resolver: zodResolver(inputsSchema),
@@ -47,11 +48,11 @@ export default function SignupForm() {
     return (
         <form className='text-center' onSubmit={handleSubmit(onSubmit)}>
             <input {...register('name')} type='text' placeholder='enter your name' />
-            <p>{error.name?.message}</p>
+            <p>{errors.name?.message}</p>
             <input {...register('email')} type='email' placeholder='enter your email' />
-            <p>{error.email?.message}</p>
+            <p>{errors.email?.message}</p>
             <input {...register('password')} type='password' placeholder='enter your password' />
-            <p>{error.password?.message}</p>
+            <p>{errors.password?.message}</p>
             <input type='submit' value='Sign Up' />
             <Link href='/login'>Already a member? Log in !</Link>
         </form>

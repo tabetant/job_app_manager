@@ -7,7 +7,7 @@ export default function EmailVer() {
             <div className='text-center text-5xl font-bold'>
                 Check your email address to verify your email, then Log In!
             </div>
-            <button onClick={() => router.push('/login')}>Login</button>
+            <button className='text-center' onClick={() => router.push('/login')}>Login</button>
         </>
     )
 }

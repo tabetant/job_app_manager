@@ -4,8 +4,9 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { supabase } from '../../db/client'
 import Link from 'next/link'
-
+import { useRouter } from 'next/navigation'
 export default function LoginForm() {
+    const router = useRouter();
     const inputsSchema = z.object({
         email: z.string().email('Invalid email address'),
         password: z.string().min(8, 'Password must be at least 8 characters')
@@ -36,6 +37,7 @@ export default function LoginForm() {
             console.error('Login Failed: ', error.message);
             return;
         }
+        router.push('/dashboard');
     }
 
     return (
@@ -44,7 +46,7 @@ export default function LoginForm() {
             <p>{errors.email?.message}</p>
             <input {...register('password')} type='password' placeholder='enter your password' />
             <p>{errors.password?.message}</p>
-            <input type='submit' value='Sign Up' />
+            <input type='submit' value='Log In' />
             <div>
                 <Link href='/signup'>Not a member? Sign Up !</Link>
             </div>
